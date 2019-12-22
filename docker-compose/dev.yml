@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    env_file: 
+      - /Users/kimdongwon/Documents/WebProgramming/Projects/산학협력프로젝트/ggachi/ggachi_backend/.credential/dev/db_credential.env
+    volumes:
+      - /Users/kimdongwon/Documents/WebProgramming/Projects/산학협력프로젝트/ggachi/ggachi_backend/db/db_volume:/var/lib/postgresql/data
+
+  web:
+    image: lunacircle4/ggachi-backend:develop
+    env_file: 
+      - /Users/kimdongwon/Documents/WebProgramming/Projects/산학협력프로젝트/ggachi/ggachi_backend/.credential/dev/credential.env
+    volumes:
+      - /Users/kimdongwon/Documents/WebProgramming/Projects/산학협력프로젝트/ggachi/ggachi_backend/:/app/
+    ports:
+      - "8000:8000"
+    depends_on: 
+      - db
+    command: 
+      - /bin/zsh
+      - -c
+      - |
+        source /root/.pyenv/versions/ggachi/bin/activate
+        python /app/web/manage.py makemigrations
+        python /app/web/manage.py migrate
+        python /app/web/manage.py runserver 0.0.0.0:8000
